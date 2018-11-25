@@ -19,7 +19,8 @@
   <!-- banner -->
   <div class="container-fluid banner">
     <div class="col col-md-9">
-      <p class="banner-text">„Digitales Laborbuch” – Methoden und Technologien zur Verknüpfung von Metadaten und Messdaten am Beispiel der SFB-Demonstratoren</p>
+      <p class="banner-text">„Digitales Laborbuch” – Methoden und Technologien zur Verknüpfung von Metadaten und
+        Messdaten am Beispiel der SFB-Demonstratoren</p>
     </div>
     <div class="col col-md-3 logos">
       <img class="img-rounded" src="../../images/tud_logo.png" alt="tud_logo" height="50px" style="margin-right: 20px">
@@ -41,7 +42,8 @@
         </ul>
         <ul class="nav navbar-nav">
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Digitales Laborbuch
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Digitales
+              Laborbuch
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
@@ -88,7 +90,7 @@
               <hr>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary" id="search_attribute_btn">Search</button>
+          <button type="button" class="btn btn-primary" id="search_attribute_btn">Search</button>
           <button type="reset" class="btn btn-danger">Reset</button>
         </form>
         <br>
@@ -194,14 +196,13 @@
     if (document.cookie == false) {
       document.location.href = '/' + 'hdf5-web-gui/html/login.html';
     } else {
-      console.log(document.cookie);
+      console.log("Logged In");
     }
   }
-  
+
   var data = {};
   $(document).ready(function () {
     $.get('sensorData.json', function (response) {
-      console.log(response);
       data = response;
     });
   });
@@ -222,6 +223,33 @@
       $(this).parents('.search_form_attribute').remove();
     });
   });
+
+  $("#search_attribute_btn").on('click', function (e) {
+    e.preventDefault();
+    var jsonObj = [];
+    var keys = [];
+    var vals = [];
+    var paths = [];
+    $(".search_form_attribute input").each(function () {
+      var element_name = $(this).attr('name');
+      var val = $(this).val();
+      if (element_name.includes("key")) {
+        keys.push(val)
+      } else {
+        vals.push(val)
+      }
+    })
+    for (i = 0; i < keys.length; i++) {
+      jsonObj.push({
+        key: keys[i],
+        value: vals[i]
+      })
+    }
+    localStorage.clear()
+    console.log(jsonObj)
+    localStorage.setItem("search_values", JSON.stringify(jsonObj))
+    window.location.replace("../app.html")
+  })
 </script>
 
 </html>

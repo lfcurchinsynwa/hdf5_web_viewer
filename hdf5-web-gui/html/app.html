@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.5/themes/default/style.min.css" />
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.7/jstree.min.js"></script>
 </head>
@@ -87,7 +88,7 @@
             <hr>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary" id="search_attribute_btn">Search</button>
+        <button type="button" class="btn btn-primary" id="search_attribute_btn" onclick="searchAttributes()">Search</button>
         <button type="reset" class="btn btn-danger">Reset</button>
       </form>
       <br>
@@ -117,13 +118,46 @@
 </body>
 <script>
   rootUrl = 'http://127.0.0.1:5050/'
-  //check cookie
+
+  //check cookie and local storage
   function checkCookie() {
     if (document.cookie == false) {
       document.location.href = '/' + 'hdf5-web-gui/html/login.html';
     } else {
       console.log("logged in");
     }
+    itemInLocalStorage = localStorage.getItem("search_values")
+    if (itemInLocalStorage != undefined ) {
+      search_values = JSON.parse(itemInLocalStorage)
+      divToChange = document.getElementById("search_form")
+      source = getAttributeFormTemplate(search_values)
+      divToChange.innerHTML = source
+    }
+  }
+
+  function getAttributeFormTemplate(search_values) {
+    source = "<div class='controls'>" +
+      "<div>" +
+      "<button type='button' class='btn btn-success btn-xs add_attr'>+</button>" +
+      "<label for='attribute'>" +
+      "<strong>Add Attributes:</strong>" +
+      "</label>" +
+      "</div>" +
+      "<hr>" +
+      "{{#search_values}}" +
+      "<div class='form-group search_form_attribute'>" +
+      "<button type='button' class='btn btn-xs btn-danger remove_attr'>-</button>" +
+      "<input type='text' class='form-control' name='fields[]_key' placeholder='Key' value='{{key}}'>" +
+      "<input type='text' class='form-control' name='fields[]_value' placeholder='Value' value='{{value}}'>" +
+      "<hr>" +
+      "</div>" +
+      "{{/search_values}}" +
+      "</div>" +
+      "<button type='button' class='btn btn-primary' id='search_attribute_btn' onClick='searchAttributes()'>Search</button>" +
+      "<button type='reset' class='btn btn-danger'>Reset</button>"
+    var template = Handlebars.compile(source);
+    var result = template({ search_values: search_values });
+    return result
   }
 
   //delete cookie and logout
@@ -249,7 +283,7 @@
       }
       treeData.push(obj)
     }
-    if(nodeToSelect == undefined){ // jstree was clicked instead of path
+    if (nodeToSelect == undefined) { // jstree was clicked instead of path
       parent = $('#jstree').jstree('get_selected')
       children = $("#jstree").jstree(true).get_node(parent).children
     } else { // path was selected
@@ -305,8 +339,8 @@
   });
 
   // show path after searching for attributes
-  $("#search_attribute_btn").click(function (e) {
-    e.preventDefault();
+  function searchAttributes() {
+    console.log("search button clicked")
     var jsonObj = {};
     var keys = [];
     var vals = [];
@@ -363,20 +397,20 @@
         alert('Error');
       }
     });
-  });
+  };
 
   // traverse tree when path clicked
-  function getTree(filename, path){
+  function getTree(filename, path) {
     splittedPath = path.split('/')
     nodeToSelect = path.split('/')
     nodeToSelect.unshift(filename)
     index = 0
     currentPath = ""
-    handler = setInterval(function() {
+    handler = setInterval(function () {
       getKeys(filename, currentPath, nodeToSelect[index])
       currentPath = currentPath + "/" + splittedPath[index]
       index = index + 1
-      if(index > splittedPath.length){
+      if (index > splittedPath.length) {
         clearInterval(handler)
       }
     }, 500)
