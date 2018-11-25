@@ -1,0 +1,227 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+
+  <title>HTMLAssembly1.1</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../css/content.css">
+  <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.min.css" type="text/css" />
+  <link rel="stylesheet" href="./virtual_test_style.css">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="./virtual_test_script.js"></script>
+
+</head>
+
+<body onLoad="checkCookie()">
+  <!-- banner -->
+  <div class="container-fluid banner">
+    <div class="col col-md-9">
+      <p class="banner-text">„Digitales Laborbuch” – Methoden und Technologien zur Verknüpfung von Metadaten und Messdaten am Beispiel der SFB-Demonstratoren</p>
+    </div>
+    <div class="col col-md-3 logos">
+      <img class="img-rounded" src="../../images/tud_logo.png" alt="tud_logo" height="50px" style="margin-right: 20px">
+      <img class="img-rounded" src="../../images/Logo_SFB.png" alt="sfb_logo" height="50px">
+    </div>
+  </div>
+
+  <!-- The navigation bar -->
+  <nav class="navbar navbar-default custom-nav">
+    <div class="container-fluid">
+      <div class="navbar-header">
+      </div>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="../index.html">Alfresco</a>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Digitales Laborbuch
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="../app.html">HDF View</a>
+              </li>
+              <li>
+                <a href="./virtualdemonstrator/virtual_test.html">Virtual Demonstrator</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <button onclick="logout()">Logout</button>
+          </li>
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+  </nav>
+
+  <div id="contentBlock">
+    <div id="viewerHost" class="container-fluid">
+      <div id="component" class="col col-md-8" />
+    </div>
+    <div class="mySidebar col col-md-2 " style="background:aliceblue">
+      <fieldset>
+        <legend>Search</legend>
+        <form id="search_form" class="search_form">
+          <div class="controls">
+            <div>
+              <button type="button" class="btn btn-success btn-xs add_attr">+</button>
+              <label for="attribute">
+                <strong>Add Attributes:</strong>
+              </label>
+            </div>
+            <hr>
+            <div class="form-group search_form_attribute">
+              <button type="button" class="btn btn-xs btn-danger remove_attr">-</button>
+              <input type="text" class="form-control" name="fields[]_key" placeholder="Key" value="manufacturer">
+              <input type="text" class="form-control" name="fields[]_value" placeholder="Value" value="MECOS AG">
+              <hr>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="search_attribute_btn">Search</button>
+          <button type="reset" class="btn btn-danger">Reset</button>
+        </form>
+        <br>
+      </fieldset>
+      <hr>
+      <fieldset>
+        <legend>Results</legend>
+        <div id="paths">
+          <h2>Paths</h2>
+        </div>
+      </fieldset>
+      <hr>
+    </div>
+    <div id="sidePanel" class="col col-md-2" style="display: block;">
+
+      <div class="ms-CommandBar siemens-commandBar" id="navButtons">
+
+        <div class="ms-CommandBar-sideCommands siemens-sideCommands">
+          <div class="ms-CommandBarItem siemens-commandBarItem">
+            <div class="ms-CommandBarItem-linkWrapper siemens-commandBarItem-linkWrapper">
+              <a class="ms-CommandBarItem-link siemens-commandBarItem-link" tabindex="1" id="pan" title="Pan">
+                <span class="ms-CommandBarItem-icon ms-Icon siemens-Icon--pan"></span>
+                <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Pan</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="ms-CommandBarItem siemens-commandBarItem">
+            <div class="ms-CommandBarItem-linkWrapper siemens-commandBarItem-linkWrapper">
+              <a class="ms-CommandBarItem-link siemens-commandBarItem-link" tabindex="1" id="zoom" title="Zoom">
+                <span class="ms-CommandBarItem-icon ms-Icon siemens-Icon--zoom"></span>
+                <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Zoom</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="ms-CommandBarItem siemens-commandBarItem">
+            <div class="ms-CommandBarItem-linkWrapper siemens-commandBarItem-linkWrapper">
+              <a class="ms-CommandBarItem-link siemens-commandBarItem-link" tabindex="1" id="rotate" title="Rotate">
+                <span class="ms-CommandBarItem-icon ms-Icon siemens-Icon--rotate"></span>
+                <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Rotate</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="ms-List siemens-actionArea">
+
+        <div class="ms-ListItem">
+          <button class="ms-Button ms-Button--command siemens-accordian" id="showModelViewArea">
+            <span class="ms-Button-icon">
+              <i class="ms-Icon ms-Icon--expand" id="showModelViewAreaIcon"></i>
+            </span>
+            <span class="ms-Button-label">Model Views</span>
+          </button>
+        </div>
+
+        <div class="ms-ListItem siemens-modelViewArea" id="modelViewArea">
+          <div class="ms-Dropdown" tabindex="0">
+            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+            <select class="ms-Dropdown-select" id="modelViewsList"></select>
+          </div>
+        </div>
+
+        <div class="ms-ListItem">
+          <button class="ms-Button ms-Button--command siemens-accordian" id="showPartSelectionArea">
+            <span class="ms-Button-icon">
+              <i class="ms-Icon ms-Icon--expand" id="showPartSelectionAreaIcon"></i>
+            </span>
+            <span class="ms-Button-label">Part Details</span>
+          </button>
+        </div>
+
+        <div id="partSelectionArea" class="ms-ListItem siemens-partSelectionArea">
+          <div class="ms-List" id="partSelectionList">
+            <div class="ms-listitem">
+              <span class="ms-ListItem-primaryText">No parts selected.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  //delete cookie and logout
+  function logout() {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i];
+      var eqPos = cookie.indexOf("=");
+      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    document.location.href = '/' + 'sfb805/hdf5-web-gui/html/login.html';
+  }
+
+  function checkCookie() {
+    if (document.cookie == false) {
+      document.location.href = '/' + 'hdf5-web-gui/html/login.html';
+    } else {
+      console.log(document.cookie);
+    }
+  }
+  
+  var data = {};
+  $(document).ready(function () {
+    $.get('sensorData.json', function (response) {
+      console.log(response);
+      data = response;
+    });
+  });
+
+  //add and remove search attributes
+  $(function () {
+    $(document).on('click', '.add_attr', function (e) {
+      e.preventDefault();
+
+      var newEntry = $('.search_form_attribute:last').clone();
+
+      $('.controls').append(newEntry);
+    });
+
+    $(document).on('click', '.remove_attr', function (e) {
+      e.preventDefault();
+
+      $(this).parents('.search_form_attribute').remove();
+    });
+  });
+</script>
+
+</html>

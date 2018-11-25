@@ -1,0 +1,23 @@
+Schlitten:
+	Kraftsensor:	PCB 260A03	Sn: 16679	PCB Piecotronics
+	Kraftsensor:	PCB 260A03	Sn: 16678	PCB Piecotronics
+	Kraftsensor:	PCB 260A03	Sn: 16677	PCB Piecotronics
+	
+Gelenkmodul:
+	Wegsensor:	P117.200AKNU	Sn: 60140	Altena
+	Wegsensor:	P117.200AKNU	Sn: 60139	Altena
+	Wegsensor:	P117.200AKNU	Sn: 60141	Altena
+	
+FederDaempfer:
+	Kraftsensor:	8438-6050	Sn: 447065 Burster
+	Kraftsensor:	8438-6050	Sn: 447058 Burster
+	
+Prallplatte:
+	Kraftsensor:	K3D160-10/10/20kN	Sn: 15285023	ME-Meﬂsysteme GmbH
+	
+OberesStabwerk:
+	DMS:
+
+UnteresStabwerk
+	DMS:
+	

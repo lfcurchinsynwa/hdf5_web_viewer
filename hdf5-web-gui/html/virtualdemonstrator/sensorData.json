@@ -1,0 +1,25 @@
+{
+  "Schlitten": [
+     "Kraftsensor:\tPCB 260A03\tSn: 16679\tManufacturer:\tPCB Piecotronics",
+     "Kraftsensor:\tPCB 260A03\tSn: 16678\tManufacturer:\tPCB Piecotronics",
+     "Kraftsensor:\tPCB 260A03\tSn: 16677\tManufacturer:\tPCB Piecotronics"
+  ],
+  "Gelenkmodul": [
+     "Wegsensor:\tP117.200AKNU\tSn: 60140\tManufacturer:\tAltena",
+     "Wegsensor:\tP117.200AKNU\tSn: 60139\tManufacturer:\tAltena",
+     "Wegsensor:\tP117.200AKNU\tSn: 60141\tManufacturer:\tAltena"
+  ],
+  "FederDaempfer": [
+     "Kraftsensor:\t8438-6050\tSn: 447065\tManufacturer:\tBurster",
+     "Kraftsensor:\t8438-6050\tSn: 447058\tManufacturer:\tBurster"
+  ],
+  "Prallplatte": [
+     "Kraftsensor:\tK3D160-10/10/20kN\tSn: 15285023\tManufacturer:\tME-Meßsysteme GmbH"
+  ],
+  "OberesStabwerk": [
+     "DMS:"
+  ],
+  "UnteresStabwerk": [
+     "DMS:"
+  ]
+}

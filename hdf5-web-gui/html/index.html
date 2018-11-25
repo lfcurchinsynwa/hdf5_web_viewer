@@ -1,0 +1,287 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/content.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.5/themes/default/style.min.css" />
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.5/jstree.min.js"></script>
+</head>
+
+<body onLoad="checkCookie();">
+
+  <div class="container-fluid banner">
+    <div class="col col-md-9">
+      <p class="banner-text">„Digitales Laborbuch” – Methoden und Technologien zur Verknüpfung von Metadaten und Messdaten am Beispiel der SFB-Demonstratoren</p>
+    </div>
+    <div class="col col-md-3 logos">
+      <img class="img-rounded" src="../images/tud_logo.png" alt="tud_logo" height="50px" style="margin-right: 20px">
+      <img class="img-rounded" src="../images/Logo_SFB.png" alt="sfb_logo" height="50px">
+    </div>
+  </div>
+
+  <nav class="navbar navbar-default custom-nav">
+    <div class="container-fluid">
+      <div class="navbar-header">
+      </div>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="./index.html">Alfresco</a>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Digitales Laborbuch
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="./app.html">HDF View</a>
+              </li>
+              <li>
+                <a href="./virtualdemonstrator/virtual_test.html">Virtual Demonstrator</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <button onclick="logout()">Logout</button>
+          </li>
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+  </nav>
+
+  <div class="col col-md-3">
+    <div id="jstree"></div>
+  </div>
+
+  <div id="main" class="col col-md-9">
+    <div>
+      <!-- <div id="alfresco-result-table"></div> -->
+      <!-- <button type="button" class="btn btn-info btn-sm upload-btn" data-toggle="modal" data-target="#uploadModal">Upload Files</button> -->
+
+      <!-- Modal -->
+      <div class="modal fade" id="uploadModal" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Upload Files</h4>
+            </div>
+            <div class="modal-body">
+              <form id="uploadForm" enctype="multipart/form-data" method="POST" action="https://alfresco805.dik.maschinenbau.tu-darmstadt.de/alfresco/service/api/upload">
+                <div class="form-group">
+                  <label for="fileDescription">Description:</label>
+                  <input type="text" name="description" id="fileDescription" class="form-control">
+                  <hr>
+                  <label for="selectFile">Select a file:</label>
+                  <input type="file" name="filedata" class="form-control-file" id="selectFile" class="form-control">
+                  <input type="hidden" name="contenttype" id="fileType" value="cm:content">
+                  <input type="hidden" name="destination" id="fileDestination" value="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary" id="fileUploadSubmit">Upload</button>
+                </div>
+            </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div id="alfresco-result-div"></div>
+    </div>
+  </div>
+</body>
+
+<script>
+  var username, password;
+
+  function getCookie(name) {
+    var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : null;
+  }
+
+  //delete cookie and logout
+  function logout(){
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var eqPos = cookie.indexOf("=");
+        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    document.location.href = '/'+ 'sfb805/hdf5-web-gui/html/login.html';
+  }
+
+  //check cookie...
+  function checkCookie(){
+    if(document.cookie == false) {
+      document.location.href = '/'+ 'sfb805/hdf5-web-gui/html/login.html';
+    } else {
+      username = getCookie('username');
+      password = getCookie('password');
+      getAjax("");
+    }
+  }
+
+  // setup the initial ajax call and future calls
+  var isLoggedIn = false;
+  var rootUrl = "https://alfresco805.dik.maschinenbau.tu-darmstadt.de/alfresco/api/-default-/public/cmis/versions/1.1/browser/root";
+  var childrenSelector = "cmisselector=children"
+  var parentID = '';
+  function getAjax(url, parentID) {
+    $.ajax({
+      username: username,
+      password: password,
+      type: "GET",
+      url: rootUrl + url,
+      success: function (result, status, xhr) {
+        $('#alfresco-result-div').html(getHtmlTable(result.objects, url, parentID));
+        getSidebar();
+      },
+      error: function (xhr, status, error) {
+        $("#alfresco-result-message").html("Error:" + error);
+      }
+    });
+  }
+</script>
+
+<script type="text/javascript">
+  // create sidebar using jstree
+  function getSidebar() {
+    $('#jstree').jstree({
+      'core': {
+        'data': function (node, cb) {
+          let url = rootUrl;
+          if (node.id !== '#') {
+            url = rootUrl + node.id;
+            console.log(url);
+          }
+          $.ajax({
+            url: url,
+            success: function (result, status, xhr) {
+              let children = [];
+              let objects = result.objects;
+              for (i = 0; i < objects.length; i++) {
+                var object = objects[i].object;
+                var objectType = object.properties["cmis:objectTypeId"].value
+
+                if (objectType == "cmis:document") { //for files
+                  var nodeName = object.properties["cmis:name"].value;
+                  var nodeId = object.properties["cmis:objectId"].value;
+                } else {
+                  var nodeId = object.properties["cmis:objectId"].value;
+                  var parentId = object.properties["cmis:parentId"].value;
+                  var nodeName = object.properties["cmis:name"].value;
+                  var nodePath = object.properties["cmis:path"].value;
+                }
+
+                children.push({
+                  id: nodePath,
+                  text: nodeName,
+                  children: objectType !== "cmis:document",
+                });
+              }
+              cb.call(this, children);
+            },
+            error: function (xhr, status, error) {
+              $("#alfresco-result-message").html("Error:" + error);
+            }
+          });
+        }
+      }
+    });
+  }
+
+  // reload page on clicking sidebar folders
+  $(document).ready(function () {
+    $('#jstree').on('click', '.jstree-anchor', function () {
+      console.log($(this));
+      let folder_id = $(this).attr('id');
+      let folder_url = folder_id.replace('_anchor', '');
+      refreshPage(folder_url);
+    });
+  })
+
+  // create table to show the contents
+  function getHtmlTable(objects, url, parentID) {
+    let parentId
+    var parentUrl = url.substring(0, url.lastIndexOf('/'));
+    let source;
+    let nodes = [];
+    if (objects.length > 0) {
+      for (i = 0; i < objects.length; i++) {
+        var object = objects[i].object;
+        var objectType = object.properties["cmis:objectTypeId"].value;
+        let node = {}
+        node.nodeName = object.properties["cmis:name"].value;
+        node.nodeId = object.properties["cmis:objectId"].value;
+        node.nodeType = objectType;
+        node.parenturl = parentUrl;
+        if (objectType != "cmis:document") { //it is a folder
+          node.parentId = object.properties["cmis:parentId"].value;
+          node.parenturl = parentUrl;
+          node.nodePath = object.properties["cmis:path"].value;
+          parentId = object.properties["cmis:parentId"].value; // parent for child nodes
+          parentID = object.properties["cmis:parentId"].value; // value for this current node
+        }
+        nodes.push(node);
+      }
+      source = "<div class='container-fluid main-content'>" +
+        "<button type='button' class='btn btn-info btn-sm back-btn' onclick = 'refreshPage(\"{{nodes.0.parenturl}}\", \"{{nodes.0.parentId}}\")'>Back</button>" +
+        "<button type='button' class='btn btn-info btn-sm upload-btn' data-toggle='modal' data-target='#uploadModal'>Upload Files</button>" + 
+        "<div class='row'>" +
+        "{{#nodes}}" +
+        "<div class='col col-md-6 nodes'>" +
+        "{{#if parentId}}" +
+        "<a onclick = 'refreshPage(\"{{nodePath}}\", \"{{parentId}}\")'><img src = '../images/folder.png'><span> {{nodeName}}</span></a>" +
+        "{{else}}" +
+        "<a onclick = 'openFile(\"{{nodeId}}\", \"{{nodeName}}\")'><img src = '../images/file.png'><span> {{nodeName}}</span></a>" +
+        "{{/if}}" +
+        "</div>" +
+        "{{/nodes}}" +
+        "<div>" +
+        "</div>";
+
+      $('#fileDestination').attr('value', 'workspace://SpacesStore/' + parentID);
+
+    } else {
+      source = "<div class='container-fluid main-content'><h2>There are no contents here...</h2></div>"
+    }
+    var template = Handlebars.compile(source);
+    var result = template({ nodes: nodes });
+    return result;
+  }
+
+  // refresh the page with new contents
+  function refreshPage(nodePath, nodeId) {
+    getAjax(nodePath, nodeId);
+  }
+
+  // if item is file open it
+  function openFile(nodeId, nodeName) {
+    var contentRootUrl = "https://alfresco805.dik.maschinenbau.tu-darmstadt.de/alfresco/d/d/workspace/SpacesStore/";
+    nodeId = nodeId.substring(0, nodeId.lastIndexOf(';'));
+    var contentUrl = contentRootUrl + nodeId + '/' + nodeName;
+    window.open(contentUrl);
+
+  }
+</script>
+
+</html>

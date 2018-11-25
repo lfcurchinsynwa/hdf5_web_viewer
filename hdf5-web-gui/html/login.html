@@ -1,0 +1,63 @@
+<head>
+    <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/content.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+  <div class="container-fluid banner">
+    <div class="col col-md-9">
+      <p class="banner-text">„Digitales Laborbuch” – Methoden und Technologien zur Verknüpfung von Metadaten und Messdaten am Beispiel der SFB-Demonstratoren</p>
+    </div>
+    <div class="col col-md-3 logos">
+      <img class="img-rounded" src="../images/tud_logo.png" alt="tud_logo" height="50px" style="margin-right: 20px">
+      <img class="img-rounded" src="../images/Logo_SFB.png" alt="sfb_logo" height="50px">
+    </div>
+  </div>
+  <div id="main" class="col col-md-12">
+    <form id="login-form">
+      <div class="form-group">
+        <label for="exampleInputEmail1">Username</label>
+        <input type="text" class="form-control" id="alfresco-rest-username" placeholder="Enter Username" value="Subedi">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Password</label>
+        <input type="password" class="form-control" id="alfresco-rest-password" placeholder="Password" value="computer1991">
+      </div>
+      <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
+    </form>
+    <div class="login-error">
+      <h2>Login Unsuccessful. Please check your credentials and try again..</h2>
+    </div>
+  </div>
+</body>
+
+<script>
+  $('#submit-button').on('click', function(e){
+    e.preventDefault();
+    console.log("IN HERE");
+    $.ajax({
+      url: 'https://alfresco805.dik.maschinenbau.tu-darmstadt.de/alfresco/service/api/login',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        username: $('#alfresco-rest-username').val(),
+        password: $('#alfresco-rest-password').val(),
+      }),
+      success: function(response){
+        // document.cookie = "username=" + $('#alfresco-rest-username').val() + ", password=" + $('#alfresco-rest-password').val() + ", ticket=" + response.data.ticket;
+        document.cookie = "username=" + $('#alfresco-rest-username').val();
+        document.cookie = "password=" + $('#alfresco-rest-password').val();
+        document.cookie = "ticket=" + response.data.ticket;
+
+        document.location.href = "/" + "sfb805/hdf5-web-gui/html";
+      },
+      error: function(response){
+        $('.login-error').css('display', 'block');
+      }
+    });
+  });
+</script>

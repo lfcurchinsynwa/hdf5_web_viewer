@@ -1,0 +1,77 @@
+.main-content {
+  width: auto;
+  margin-top: 5px;
+  border-radius: 25px;
+  background:seashell;
+}
+
+.nodes {
+  cursor: pointer;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.custom-nav {
+  margin-bottom: auto;
+}
+
+.mySidebar {
+  height: -webkit-fill-available;
+  height: -moz-available;
+  height: fill-available;
+  overflow: scroll;
+}
+
+.banner {
+  background:#d83030;
+}
+
+.banner-text {
+  margin-top: 15px;
+}
+
+#displayContainer{
+  width: auto;
+}
+
+#myGrid {
+  width: auto;
+  height: 500px;
+  display: none;
+  
+}
+
+.add_attr{
+  float: right;
+  padding: 1px 8px;
+}
+
+.remove_attr{
+  float: right;
+  padding: 1px 8px;
+  margin-bottom: 5px;
+}
+
+.controls label {
+  font-size: initial;
+}
+
+.upload-btn {
+  float: right
+}
+
+.logos {
+  background: white;
+  width: fit-content;
+  float: right;
+}
+
+.login-error {
+  display: none;
+}
+
+.content{
+  max-height: 500px;
+  overflow-x: scroll;
+  overflow-y: scroll;
+}

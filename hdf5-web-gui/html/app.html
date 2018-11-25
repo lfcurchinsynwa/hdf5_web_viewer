@@ -1,0 +1,384 @@
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/content.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.5/themes/default/style.min.css" />
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.7/jstree.min.js"></script>
+</head>
+
+<body onLoad="checkCookie()">
+  <!-- The banner -->
+  <div class="container-fluid banner">
+    <div class="col col-md-9">
+      <p class="banner-text">„Digitales Laborbuch” – Methoden und Technologien zur Verknüpfung von Metadaten und
+        Messdaten am Beispiel der SFB-Demonstratoren</p>
+    </div>
+    <div class="col col-md-3 logos">
+      <img class="img-rounded" src="../images/tud_logo.png" alt="tud_logo" height="50px" style="margin-right: 20px">
+      <img class="img-rounded" src="../images/Logo_SFB.png" alt="sfb_logo" height="50px">
+    </div>
+  </div>
+
+  <!-- The navigation bar -->
+  <nav class="navbar navbar-default custom-nav">
+    <div class="container-fluid">
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="./index.html">Alfresco Server</a>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Digitales
+              Laborbuch
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="./app.html">HDF Viewer</a>
+              </li>
+              <li>
+                <a href="./virtualdemonstrator/virtual_test.html">Virtual Demonstrator</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <button onclick="logout()">Logout</button>
+          </li>
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+  </nav>
+
+  <!-- Side search menu -->
+  <div class="mySidebar col col-md-2 " style="background:aliceblue">
+    <fieldset>
+      <legend>Search</legend>
+      <div class="input-group">
+        <label class="input-group-text" for="searchType">Search Type:</label>
+        <select class="custom-select" id="searchType">
+          <option selected value="OR">OR</option>
+          <option value="AND">AND</option>
+          <option value="CONNECTED">CONNECTED</option>
+        </select>
+      </div>
+      <form id="search_form" class="search_form">
+        <div class="controls">
+          <div>
+            <button type="button" class="btn btn-success btn-xs add_attr">+</button>
+            <label for="attribute">
+              <strong>Add Attributes:</strong>
+            </label>
+          </div>
+          <hr>
+          <div class="form-group search_form_attribute">
+            <button type="button" class="btn btn-xs btn-danger remove_attr">-</button>
+            <input type="text" class="form-control" name="fields[]_key" placeholder="Key" value="manufacturer">
+            <input type="text" class="form-control" name="fields[]_value" placeholder="Value" value="MECOS AG">
+            <hr>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="search_attribute_btn">Search</button>
+        <button type="reset" class="btn btn-danger">Reset</button>
+      </form>
+      <br>
+    </fieldset>
+    <hr>
+    <fieldset>
+      <legend>Results</legend>
+      <div id="paths">
+        <h2>Paths</h2>
+      </div>
+    </fieldset>
+    <hr>
+  </div>
+
+  <!-- Side file navigation menu -->
+  <div class="mySidebar col col-md-2">
+    <div id="jstree"></div>
+  </div>
+
+  <div class="col col-md-8">
+    <div id="content" class="content"></div>
+    <div class="show-attributes" id="footer">
+      <h2>Attributes for groups and datasets will be shown here</h2>
+    </div>
+  </div>
+
+</body>
+<script>
+  rootUrl = 'http://127.0.0.1:5050/'
+  //check cookie
+  function checkCookie() {
+    if (document.cookie == false) {
+      document.location.href = '/' + 'hdf5-web-gui/html/login.html';
+    } else {
+      console.log("logged in");
+    }
+  }
+
+  //delete cookie and logout
+  function logout() {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i];
+      var eqPos = cookie.indexOf("=");
+      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    document.location.href = '/' + 'sfb805/hdf5-web-gui/html/login.html';
+  }
+
+  // load hdf5 files in jstree for file navigation
+  $(function () {
+    $.ajax({
+      url: rootUrl + 'getFiles',
+      method: 'POST',
+      success: function (response) {
+        treeData = []
+        for (i = 0; i < response.files.length; i++) {
+          obj = {
+            "id": response.files[i],
+            "text": response.files[i],
+          }
+          treeData.push(obj)
+        }
+        $("#jstree").jstree({
+          'core': {
+            "data": treeData,
+            "check_callback": true
+          }
+        })
+      },
+      error: function (error) {
+        console.log(error)
+      }
+    })
+  })
+
+  // handle click event on jstree
+  $(document).ready(function () {
+    $("#jstree").on('click', '.jstree-anchor', function () {
+      parentTreeNode = $('#jstree').jstree(true).get_node($(this))
+      if (parentTreeNode.id.endsWith('.h5')) {
+        filename = parentTreeNode.id
+        path = ''
+      } else {
+        for (i = 0; i < parentTreeNode.parents.length; i++) {
+          if (parentTreeNode.parents[i].endsWith('.h5')) {
+            filename = parentTreeNode.parents[i]
+          }
+        }
+        path = parentTreeNode.original.path
+        getAttributes(filename, path)
+      }
+      getKeys(filename, path)
+    })
+  })
+
+  // get attributes from files
+  function getAttributes(filename, path) {
+    $.ajax({
+      method: 'POST',
+      url: rootUrl + 'getattribute',
+      data: {
+        path: path,
+        fileName: filename
+      },
+      success: function (result) {
+        if (result.length > 0) {
+          html = '<h3>Number of attributes: ' + result.length + '</h3>';
+          html += '<ul>';
+          for (var i = 0; i < result.length; i++) {
+            html += '<li><strong>' + result[i][0] + ':</strong> ' + result[i][1] + '</li>';
+          }
+          html += '</ul>'
+        }
+        else {
+          html = '<h4>There are no attributes<h4>';
+        }
+        $('.show-attributes').html(html);
+      },
+      error: function (result) {
+        console.log(result);
+      }
+    })
+  }
+
+  // get keys from files
+  function getKeys(filename, path, nodeToSelect) {
+    $.ajax({
+      url: rootUrl + 'getKeys',
+      method: 'POST',
+      data: {
+        'filename': filename,
+        'path': path
+      },
+      success: function (response) {
+        if (typeof response == 'object') {
+          generateTree(response, nodeToSelect)
+        } else {
+          displayDataset(filename, response)
+        }
+      },
+      error: function (error) {
+        console.log(error)
+      }
+    })
+  }
+
+  // generate jstree
+  function generateTree(response, nodeToSelect) {
+    console.log(response)
+    treeData = []
+    for (i = 0; i < response.length; i++) {
+      obj = {
+        "id": response[i].id,
+        "text": response[i].id,
+        "path": response[i].path
+      }
+      treeData.push(obj)
+    }
+    if(nodeToSelect == undefined){ // jstree was clicked instead of path
+      parent = $('#jstree').jstree('get_selected')
+      children = $("#jstree").jstree(true).get_node(parent).children
+    } else { // path was selected
+      $('#jstree').jstree("deselect_all");
+      $('#jstree').jstree('select_node', nodeToSelect)
+      parent = $('#jstree').jstree('get_selected')
+      console.log("parentSetTo:" + nodeToSelect)
+      children = $("#jstree").jstree(true).get_node(parent).children
+    }
+    console.log("parent:" + parent)
+    console.log("child:" + children)
+    $("#jstree").jstree(true).delete_node(children);
+    treeData.forEach(function (child) {
+      $('#jstree').jstree("create_node", parent[0], child, 'last')
+    })
+    $('#jstree').jstree('toggle_node', parent);
+  }
+
+  // display the contents of the dataset
+  function displayDataset(filename, path) {
+    console.log("path:" + path)
+    $.ajax({
+      url: rootUrl + 'fileContents',
+      method: 'POST',
+      data: {
+        filename: filename,
+        path: path
+      },
+      success: function (response) {
+        document.getElementById('content').innerHTML = response
+      },
+      error: function (error) {
+        console.log(error)
+      }
+    })
+  }
+
+  // add and remove attribute field dynamically
+  $(function () {
+    $(document).on('click', '.add_attr', function (e) {
+      e.preventDefault();
+
+      var newEntry = $('.search_form_attribute:last').clone();
+
+      $('.controls').append(newEntry);
+    });
+
+    $(document).on('click', '.remove_attr', function (e) {
+      e.preventDefault();
+
+      $(this).parents('.search_form_attribute').remove();
+    });
+  });
+
+  // show path after searching for attributes
+  $("#search_attribute_btn").click(function (e) {
+    e.preventDefault();
+    var jsonObj = {};
+    var keys = [];
+    var vals = [];
+    var paths = [];
+    $(".search_form_attribute input").each(function () {
+      var element_name = $(this).attr('name');
+      var val = $(this).val();
+      if (element_name.includes("key")) {
+        keys.push(val)
+      } else {
+        vals.push(val)
+      }
+    })
+    for (i = 0; i < keys.length; i++) {
+      jsonObj[i] = {
+        key: keys[i],
+        value: vals[i]
+      }
+    }
+    $.ajax({
+      type: 'POST',
+      url: rootUrl + 'getpath',
+      data: {
+        searchType: $('#searchType').val(),
+        attributes: JSON.stringify(jsonObj)
+      },
+      success: function (result) {
+        if (result.searchType == "CONNECTED") {
+          if (result.connectedPaths.length > 0) {
+            html = '<ul>';
+            for (var i = 0; i < result.connectedPaths.length; i++) {
+              paths.push(result.connectedPaths[i]);
+              html += '<li id=' + result.connectedPaths[i] + "><a onClick = getTree('" + result.filePath[0] + "','" + result.connectedPaths[i] + "') >" + result.connectedPaths[i] + '</a></li>';
+            }
+            html += '</ul>';
+          } else {
+            html = '<p>No matches were found</p>';
+          }
+        } else {
+          if (result.paths.length > 0) {
+            html = '<ul>';
+            for (var i = 0; i < result.paths.length; i++) {
+              paths.push(result.paths[i]);
+              html += '<li id=' + result.paths[i] + "><a onClick = getTree('" + result.filePath[0] + "','" + result.paths[i] + "') >" + result.paths[i] + '</a></li>';
+            }
+            html += '</ul>';
+          } else {
+            html = '<p>No matches were found</p>';
+          }
+        }
+        $('#paths').html(html);
+      },
+      error: function (result) {
+        alert('Error');
+      }
+    });
+  });
+
+  // traverse tree when path clicked
+  function getTree(filename, path){
+    splittedPath = path.split('/')
+    nodeToSelect = path.split('/')
+    nodeToSelect.unshift(filename)
+    index = 0
+    currentPath = ""
+    handler = setInterval(function() {
+      getKeys(filename, currentPath, nodeToSelect[index])
+      currentPath = currentPath + "/" + splittedPath[index]
+      index = index + 1
+      if(index > splittedPath.length){
+        clearInterval(handler)
+      }
+    }, 500)
+  }
+</script>
