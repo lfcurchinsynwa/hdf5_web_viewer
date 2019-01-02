@@ -87,13 +87,13 @@ def api_gethdf():
           break
       if allmatch:
         paths.append(name)
-        filepath.append("/".join(os.path.normpath(object.file.filename).split(os.sep)[-2:]))
+        filepath.append("/".join(os.path.normpath(object.file.filename).split(os.sep)[-1:]))
     else :
       first_attr_name = attributes.keys()[0]
       first_attr_value = attributes[first_attr_name]
       if first_attr_name in object.attrs and object.attrs[first_attr_name] == first_attr_value:
         paths.append(name)
-        filepath.append("/".join(os.path.normpath(object.file.filename).split(os.sep)[-2:]))
+        filepath.append("/".join(os.path.normpath(object.file.filename).split(os.sep)[-1:]))
       
       for attr_name in attributes.keys()[1:]: 
         attr_value = attributes[attr_name]
