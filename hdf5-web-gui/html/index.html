@@ -171,7 +171,6 @@
           let url = rootUrl;
           if (node.id !== '#') {
             url = rootUrl + node.id;
-            console.log(url);
           }
           $.ajax({
             url: url,
@@ -212,7 +211,6 @@
   // reload page on clicking sidebar folders
   $(document).ready(function () {
     $('#jstree').on('click', '.jstree-anchor', function () {
-      console.log($(this));
       let folder_id = $(this).attr('id');
       let folder_url = folder_id.replace('_anchor', '');
       refreshPage(folder_url);

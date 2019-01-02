@@ -106,13 +106,13 @@
   </div>
 
   <!-- Side file navigation menu -->
-  <div class="col col-md-2" id="resizable">
+  <div class="col col-md-3" id="resizable">
     <div class="mySidebar">
       <div id="jstree"></div>
     </div>
   </div>
 
-  <div class="col col-md-8">
+  <div class="col col-md-7">
     <div id="content" class="content"></div>
     <div class="show-attributes" id="footer">
       <h2>Attributes for groups and datasets will be shown here</h2>
@@ -281,7 +281,6 @@
 
   // generate jstree
   function generateTree(response, nodeToSelect) {
-    console.log(response)
     treeData = []
     for (i = 0; i < response.length; i++) {
       obj = {
@@ -298,11 +297,8 @@
       $('#jstree').jstree("deselect_all");
       $('#jstree').jstree('select_node', nodeToSelect)
       parent = $('#jstree').jstree('get_selected')
-      console.log("parentSetTo:" + nodeToSelect)
       children = $("#jstree").jstree(true).get_node(parent).children
     }
-    console.log("parent:" + parent)
-    console.log("child:" + children)
     $("#jstree").jstree(true).delete_node(children);
     treeData.forEach(function (child) {
       $('#jstree').jstree("create_node", parent[0], child, 'last')
@@ -312,7 +308,6 @@
 
   // display the contents of the dataset
   function displayDataset(filename, path) {
-    console.log("path:" + path)
     $.ajax({
       url: rootUrl + 'fileContents',
       method: 'POST',
@@ -348,7 +343,6 @@
 
   // show path after searching for attributes
   function searchAttributes() {
-    console.log("search button clicked")
     var jsonObj = {};
     var keys = [];
     var vals = [];
@@ -378,23 +372,49 @@
       success: function (result) {
         if (result.searchType == "CONNECTED") {
           if (result.connectedPaths.length > 0) {
-            html = '<ul>';
-            for (var i = 0; i < result.connectedPaths.length; i++) {
-              paths.push(result.connectedPaths[i]);
-              html += '<li id=' + result.connectedPaths[i] + "><a onClick = getTree('" + result.filePath[0] + "','" + result.connectedPaths[i] + "') >" + result.connectedPaths[i] + '</a></li>';
-            }
-            html += '</ul>';
+            html = "<div class='paths'>"
+              for(j=0; j<result.filePath.length; j++){
+                html += "<h3>" + result.filePath[j] + "</h3>"
+                html += "<ul>"
+                for (var i = 0; i < result.connectedPaths.length; i++) {
+                  var over = result.filePath[j]
+                  var under = result.connectedPaths[i].split('/')[0]
+                  if(over == under){
+                    html += '<li id=' + result.paths[i] + "><a onClick = getTree('" + result.filePath[j] + "','" + result.connectedPaths[i] + "') >" + result.connectedPaths[i] + '</a></li>';
+                  }
+                }
+              html += "</ul>"
+              }
+            html += "</div>"
+            // html = "<div class='paths'>"
+            //   html += "<button class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown'>" + result.filePath[0]
+            //   html += "<span class='caret'></span></button>"
+            //   html += "<ul class='dropdown-menu'>"
+            //   for (var i = 0; i < result.connectedPaths.length; i++) {
+            //     paths.push(result.connectedPaths[i])
+            //     html += '<li id=' + result.connectedPaths[i] + "><a onClick = getTree('" + result.filePath[0] + "','" + result.connectedPaths[i] + "') >" + result.connectedPaths[i] + '</a></li>';
+            //   }
+            //   html += "</ul>"
+            // html += "</div>"
           } else {
             html = '<p>No matches were found</p>';
           }
         } else {
           if (result.paths.length > 0) {
-            html = '<ul>';
-            for (var i = 0; i < result.paths.length; i++) {
-              paths.push(result.paths[i]);
-              html += '<li id=' + result.paths[i] + "><a onClick = getTree('" + result.filePath[0] + "','" + result.paths[i] + "') >" + result.paths[i] + '</a></li>';
-            }
-            html += '</ul>';
+            html = "<div class='paths'>"
+              for(j=0; j<result.filePath.length; j++){
+                html += "<h3>" + result.filePath[j] + "</h3>"
+                html += "<ul>"
+                for (var i = 0; i < result.paths.length; i++) {
+                  var over = result.filePath[j]
+                  var under = result.paths[i].split('/')[0]
+                  if(over == under){
+                    html += '<li id=' + result.paths[i] + "><a onClick = getTree('" + result.filePath[j] + "','" + result.paths[i] + "') >" + result.paths[i] + '</a></li>';
+                  }
+                }
+              html += "</ul>"
+              }
+            html += "</div>"
           } else {
             html = '<p>No matches were found</p>';
           }
@@ -411,10 +431,13 @@
   // traverse tree when path clicked
   function getTree(filename, path) {
     splittedPath = path.split('/')
+    splittedPath.shift()
     nodeToSelect = path.split('/')
+    nodeToSelect.shift()
     nodeToSelect.unshift(filename)
     index = 0
     currentPath = ""
+    $('#jstree').jstree(true).refresh()
     handler = setInterval(function () {
       getKeys(filename, currentPath, nodeToSelect[index])
       currentPath = currentPath + "/" + splittedPath[index]

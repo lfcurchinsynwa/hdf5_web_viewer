@@ -21,11 +21,11 @@
     <form id="login-form">
       <div class="form-group">
         <label for="exampleInputEmail1">Username</label>
-        <input type="text" class="form-control" id="alfresco-rest-username" placeholder="Enter Username" value="Subedi">
+        <input type="text" class="form-control" id="alfresco-rest-username" placeholder="Enter Username" value="">
       </div>
       <div class="form-group">
         <label for="exampleInputPassword1">Password</label>
-        <input type="password" class="form-control" id="alfresco-rest-password" placeholder="Password" value="computer1991">
+        <input type="password" class="form-control" id="alfresco-rest-password" placeholder="Password" value="">
       </div>
       <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
     </form>
@@ -38,7 +38,6 @@
 <script>
   $('#submit-button').on('click', function(e){
     e.preventDefault();
-    console.log("IN HERE");
     $.ajax({
       url: 'https://alfresco805.dik.maschinenbau.tu-darmstadt.de/alfresco/service/api/login',
       method: 'POST',
