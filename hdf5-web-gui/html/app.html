@@ -3,11 +3,13 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="../css/content.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.5/themes/default/style.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.7/jstree.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 </head>
 
 <body onLoad="checkCookie()">
@@ -104,8 +106,10 @@
   </div>
 
   <!-- Side file navigation menu -->
-  <div class="mySidebar col col-md-2">
-    <div id="jstree"></div>
+  <div class="col col-md-2" id="resizable">
+    <div class="mySidebar">
+      <div id="jstree"></div>
+    </div>
   </div>
 
   <div class="col col-md-8">
@@ -118,6 +122,10 @@
 </body>
 <script>
   rootUrl = 'http://127.0.0.1:5050/'
+
+
+  //resize the sidebar
+  $("#resizable").resizable({handles: "e"})
 
   //check cookie and local storage
   function checkCookie() {
